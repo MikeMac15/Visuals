@@ -7,7 +7,7 @@ import { OrbitControls } from '@react-three/drei';
 function App() {
   return (
     <div className="App">
-    <h1>Traveling Salesman Visualizer</h1>
+    <h1>Closest Point Visualizer</h1>
     <div id="canvas-container">
       <Canvas orthographic camera={{ zoom: 50, position: [0, 0, 50] }}>
         <ambientLight intensity={0.5} />

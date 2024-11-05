@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Line, OrbitControls } from "@react-three/drei";
+import { Line, OrbitControls, Text } from "@react-three/drei";
 import * as THREE from "three";
 
 function TravelingSalesman() {
@@ -8,6 +8,7 @@ function TravelingSalesman() {
   const [fullPath, setFullPath] = useState([]); // Complete TSP path
   const [animatedPath, setAnimatedPath] = useState([]); // Incremental path to animate
   const [currentIndex, setCurrentIndex] = useState(0); // Track the drawing position
+  const [totalLength, setTotalLength] = useState(0); // Store total path length
 
   const handleCanvasClick = useCallback((event) => {
     const [x, y] = [event.point.x, event.point.y];
@@ -33,6 +34,7 @@ function TravelingSalesman() {
       let currentPoint = points[0];
       visited.add(0);
       const path = [currentPoint];
+      let length = 0; // Local variable to accumulate total path length
 
       while (visited.size < points.length) {
         let nearest = null;
@@ -53,14 +55,19 @@ function TravelingSalesman() {
         if (nearest) {
           visited.add(nearestIndex);
           path.push(nearest);
+          length += nearestDist; // Accumulate distance
           currentPoint = nearest;
         }
       }
 
-      path.push(points[0]); // Close the loop
-      setFullPath(path); // Save the full path
+      // Close the loop by adding the distance back to the starting point
+      length += new THREE.Vector3(...path[path.length - 1]).distanceTo(new THREE.Vector3(...points[0]));
+      path.push(points[0]); // Complete the loop
+
+      setFullPath(path); // Save the complete path
       setAnimatedPath([]); // Reset animated path
-      setCurrentIndex(0); // Reset current index for new animation
+      setCurrentIndex(0); // Reset current index
+      setTotalLength(length); // Set total length
     };
 
     tspNearestNeighbor(points);
@@ -81,6 +88,9 @@ function TravelingSalesman() {
 
   return (
     <>
+      <Text color="black" anchorX="center" anchorY="top" position={[0, 20, 0]}>
+        Total Length: {totalLength.toFixed(2)}
+      </Text>
       <mesh onClick={handleCanvasClick}>
         <planeGeometry args={[40, 40]} />
         <meshStandardMaterial color="lightgrey" side={THREE.DoubleSide} />
