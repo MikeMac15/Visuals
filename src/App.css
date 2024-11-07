@@ -1,6 +1,6 @@
 .App {
   text-align: center;
-  background-color: whitesmoke;
+  background-color: white;
 }
 #canvas-container {
   display: flex;
